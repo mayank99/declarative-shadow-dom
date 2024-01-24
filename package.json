@@ -1,0 +1,16 @@
+{
+	"name": "react-shadow-dom",
+	"version": "0.1.0",
+	"type": "module",
+	"description": "React component to use declarative shadow DOM",
+	"main": "index.cjs",
+	"exports": {
+		".": {
+			"default": "./index.js"
+		}
+	},
+	"peerDependencies": {
+		"react": ">=17.0.0",
+		"react-dom": ">=17.0.0"
+	}
+}
