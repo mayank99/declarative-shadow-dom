@@ -1,13 +1,16 @@
 {
-	"name": "react-shadow-dom",
+	"name": "@declarative-shadow-dom/react",
 	"version": "0.1.0",
 	"type": "module",
 	"description": "React component to use declarative shadow DOM",
-	"main": "index.cjs",
+	"module": "index.js",
+	"types": "index.d.ts",
+	"files": [
+		"index.js",
+		"index.d.ts"
+	],
 	"exports": {
-		".": {
-			"default": "./index.js"
-		}
+		".": "./index.js"
 	},
 	"devDependencies": {
 		"@types/react": "^18.2.58",
