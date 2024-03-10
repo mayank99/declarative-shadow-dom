@@ -9,13 +9,13 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
-		"@declarative-shadow-dom/react": "*",
+		"@declarative-shadow-dom/react": "workspace:*",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0"
 	},
 	"devDependencies": {
-		"@types/react": "*",
-		"@types/react-dom": "*",
+		"@types/react": "^18.2.58",
+		"@types/react-dom": "^18.2.19",
 		"@vitejs/plugin-react-swc": "^3.5.0",
 		"typescript": "*",
 		"vite": "^5.1.4"
