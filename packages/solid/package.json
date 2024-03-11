@@ -1,0 +1,24 @@
+{
+	"name": "@declarative-shadow-dom/solid",
+	"version": "0.1.0",
+	"type": "module",
+	"description": "Solid component to use declarative shadow DOM",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/mayank99/declarative-shadow-dom.git",
+		"directory": "packages/solid"
+	},
+	"license": "MIT",
+	"module": "index.jsx",
+	"types": "index.d.ts",
+	"files": [
+		"index.jsx",
+		"index.d.ts"
+	],
+	"exports": {
+		".": "./index.tsx"
+	},
+	"devDependencies": {
+		"solid-js": "^1.8.15"
+	}
+}
