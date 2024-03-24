@@ -2,7 +2,8 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 const isServer = typeof document === 'undefined';
-const supportsDSD = 'shadowRootMode' in HTMLTemplateElement.prototype;
+const supportsDSD =
+	!isServer && 'shadowRootMode' in HTMLTemplateElement.prototype;
 
 export default function ShadowRoot({
 	children,
@@ -18,7 +19,7 @@ export default function ShadowRoot({
 	}
 
 	// By the time React hydrates, the browser has already removed the template element
-	if (!isServer && supportsDSD) return null;
+	if (supportsDSD) return null;
 
 	// for SSR, use DSD template
 	return <template {...{ shadowrootmode: mode }}>{children}</template>;
