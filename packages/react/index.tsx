@@ -1,9 +1,8 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-const isBrowser = typeof document !== 'undefined';
-const supportsDSD =
-	isBrowser && 'shadowRootMode' in HTMLTemplateElement.prototype;
+const isServer = typeof document === 'undefined';
+const supportsDSD = 'shadowRootMode' in HTMLTemplateElement.prototype;
 
 export default function ShadowRoot({
 	children,
@@ -12,46 +11,59 @@ export default function ShadowRoot({
 	children: React.ReactNode;
 	mode?: ShadowRootMode;
 }) {
-	const [shadowRoot, setShadowRoot] = React.useState(null);
-	const isFirstRender = useIsFirstRender();
+	const isClient = useIsClient();
 
-	const attachShadowRef = React.useCallback((template) => {
-		const parent = template?.parentElement;
+	if (isClient) {
+		return <ClientShadowRoot mode={mode}>{children}</ClientShadowRoot>;
+	}
 
-		if (!template || !parent) return;
+	// By the time React hydrates, the browser has already removed the template element
+	if (!isServer && supportsDSD) return null;
+
+	// for SSR, use DSD template
+	return <template {...{ shadowrootmode: mode }}>{children}</template>;
+}
+
+function ClientShadowRoot({
+	children,
+	mode = 'open',
+}: {
+	children: React.ReactNode;
+	mode?: ShadowRootMode;
+}) {
+	const templateRef = React.useRef<HTMLTemplateElement>(null);
+	const [shadowRoot, setShadowRoot] = React.useState<ShadowRoot | null>(null);
+
+	React.useLayoutEffect(() => {
+		const parent = templateRef.current?.parentElement;
+		if (!parent) return;
+
 		if (parent.shadowRoot) {
-			setShadowRoot(parent.shadowRoot);
 			parent.shadowRoot.replaceChildren();
-			return;
 		}
 
 		queueMicrotask(() => {
 			ReactDOM.flushSync(() => {
-				setShadowRoot(parent.attachShadow({ mode }));
+				setShadowRoot(parent.shadowRoot || parent.attachShadow({ mode }));
 			});
 		});
+
+		return () => setShadowRoot(null);
 	}, []);
 
-	// By the time React hydrates, the browser has already removed the template element
-	if (supportsDSD && isFirstRender) return null;
-
-	// manually portal into shadowRoot for client-side rendering
-	if (shadowRoot) {
-		return ReactDOM.createPortal(children, shadowRoot);
-	}
-
-	// for SSR or first render, use DSD template and grab the shadowRoot from its ref
-	return (
-		<template {...{ shadowrootmode: mode }} ref={attachShadowRef}>
-			{children}
-		</template>
+	return shadowRoot ? (
+		ReactDOM.createPortal(children, shadowRoot)
+	) : (
+		<template ref={templateRef} />
 	);
 }
 
-function useIsFirstRender() {
-	const [isFirstRender, setIsFirstRender] = React.useState(true);
-	React.useEffect(() => {
-		setIsFirstRender(false);
-	}, []);
-	return isFirstRender;
+const noopSubscribe = () => () => {};
+
+function useIsClient() {
+	return React.useSyncExternalStore(
+		noopSubscribe,
+		() => true,
+		() => false
+	);
 }
